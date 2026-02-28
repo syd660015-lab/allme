@@ -1,0 +1,336 @@
+﻿<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة المستكشف - العلوم المتكاملة</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;700;900&display=swap');
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: #f8fafc;
+        }
+
+        .glass-morphism {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .option-card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .correct {
+            background-color: #dcfce7 !important;
+            border-color: #22c55e !important;
+            color: #166534 !important;
+        }
+
+        .wrong {
+            background-color: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            color: #991b1b !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #certificate {
+            background: white;
+            border: 15px solid #1e3a8a;
+            position: relative;
+        }
+        
+        .cert-pattern {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url("https://www.transparenttextures.com/patterns/cubes.png");
+            opacity: 0.05;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+
+    <!-- Header Section -->
+    <header class="bg-blue-900 text-white py-6 shadow-xl mb-8">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-3xl md:text-4xl font-black mb-2">منصة المستكشف للعلوم المتكاملة</h1>
+            <p class="text-blue-200 text-lg">الصف الأول الثانوي - الفصل الدراسي الثاني</p>
+            <div class="flex flex-wrap justify-center gap-4 mt-4 text-sm font-light">
+                <span class="bg-blue-800 px-4 py-1 rounded-full border border-blue-700">إشراف: أ. أزهار عبد التواب (موجه أول علوم)</span>
+                <span class="bg-blue-800 px-4 py-1 rounded-full border border-blue-700">برمجة وتصميم: د. أحمد حمدي عاشور الغول</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-4 pb-12 max-w-4xl">
+        
+        <!-- Welcome Screen -->
+        <div id="welcome-screen" class="glass-morphism p-8 rounded-3xl shadow-2xl text-center fade-in">
+            <div class="mb-6">
+                <i class="fas fa-atom text-6xl text-blue-600"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">مرحباً بك في بنك الأسئلة التفاعلي</h2>
+            <div class="mb-6">
+                <label class="block text-gray-700 font-bold mb-2">من فضلك أدخل اسمك الثلاثي لاستلام الشهادة:</label>
+                <input type="text" id="student-name" class="w-full md:w-64 p-3 border-2 border-blue-100 rounded-xl text-center outline-none focus:border-blue-500" placeholder="اكتب اسمك هنا...">
+            </div>
+            <p class="text-gray-600 mb-8 leading-relaxed">اختر الوحدة التدريسية للبدء في الاختبار التفاعلي.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <button onclick="checkNameAndStart(3)" class="bg-white border-2 border-blue-500 hover:bg-blue-50 text-blue-700 font-bold py-6 px-4 rounded-2xl shadow-lg transition duration-300 flex flex-col items-center">
+                    <span class="text-4xl mb-2">🌿</span>
+                    الوحدة الثالثة: الغلاف الحيوي
+                </button>
+                <button onclick="checkNameAndStart(4)" class="bg-white border-2 border-amber-500 hover:bg-amber-50 text-amber-700 font-bold py-6 px-4 rounded-2xl shadow-lg transition duration-300 flex flex-col items-center">
+                    <span class="text-4xl mb-2">🏔️</span>
+                    الوحدة الرابعة: الغلاف الصخري
+                </button>
+            </div>
+        </div>
+
+        <!-- Quiz Container -->
+        <div id="quiz-container" class="hidden glass-morphism p-6 md:p-10 rounded-3xl shadow-2xl fade-in">
+            <div class="mb-8">
+                <div class="flex justify-between items-center mb-2">
+                    <span id="quiz-title" class="font-bold text-blue-900"></span>
+                    <span id="progress-text" class="text-sm text-gray-500">سؤال 1 من 10</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                    <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <div id="question-box" class="mb-10">
+                <h3 id="question-text" class="text-xl md:text-2xl font-bold text-gray-800 mb-6"></h3>
+                <div id="options-grid" class="grid grid-cols-1 gap-4"></div>
+                
+                <!-- Explanation Box -->
+                <div id="explanation-box" class="hidden mt-6 p-4 bg-blue-50 border-r-4 border-blue-500 rounded-lg fade-in">
+                    <p class="text-blue-900 font-bold mb-1"><i class="fas fa-lightbulb ml-2"></i>التفسير العلمي:</p>
+                    <p id="explanation-text" class="text-blue-800 text-sm md:text-base"></p>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center border-t pt-6">
+                <div class="text-gray-600">الدرجة: <span id="current-score" class="font-bold text-blue-600">0</span></div>
+                <button id="next-btn" onclick="nextQuestion()" class="hidden bg-blue-600 text-white px-8 py-2 rounded-xl font-bold hover:bg-blue-700 transition">السؤال التالي <i class="fas fa-arrow-left mr-2"></i></button>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden glass-morphism p-10 rounded-3xl shadow-2xl text-center fade-in">
+            <div id="result-icon" class="text-7xl mb-6"></div>
+            <h2 id="result-message" class="text-3xl font-bold mb-4"></h2>
+            <div class="bg-blue-50 p-6 rounded-2xl mb-8">
+                <div class="text-5xl font-black text-blue-900"><span id="final-score">0</span> / 10</div>
+            </div>
+            
+            <div class="flex flex-col md:flex-row gap-4 justify-center">
+                <button onclick="showCertificate()" id="cert-btn" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-4 px-8 rounded-full shadow-lg transition">
+                    <i class="fas fa-certificate ml-2"></i> عرض الشهادة
+                </button>
+                <button onclick="location.reload()" class="bg-gray-600 hover:bg-gray-700 text-white font-bold py-4 px-8 rounded-full shadow-lg transition">العودة للرئيسية</button>
+            </div>
+        </div>
+
+        <!-- Certificate View -->
+        <div id="certificate-screen" class="hidden fade-in">
+            <div id="certificate" class="p-12 text-center shadow-2xl rounded-sm">
+                <div class="cert-pattern"></div>
+                <div class="flex justify-between mb-8">
+                    <div class="text-right text-xs text-blue-900">
+                        <p>وزارة التربية والتعليم</p>
+                        <p>الإدارة المركزية لتطوير المناهج</p>
+                    </div>
+                    <i class="fas fa-award text-blue-900 text-5xl"></i>
+                </div>
+                
+                <h1 class="text-4xl font-black text-blue-900 mb-4">شهادة تفوق</h1>
+                <p class="text-xl text-gray-600 mb-8">يمنح توجيه العلوم هذه الشهادة للطالب / الطالبة:</p>
+                
+                <h2 id="cert-student-name" class="text-3xl font-bold text-blue-700 mb-8 border-b-2 border-blue-100 inline-block px-12 pb-2"></h2>
+                
+                <p class="text-lg text-gray-700 mb-12">
+                    لاجتيازه الاختبار التفاعلي في مادة <span class="font-bold italic">العلوم المتكاملة</span> بنجاح، <br> 
+                    تحت إشراف <span class="font-bold">أ. أزهار عبد التواب</span>.
+                </p>
+
+                <div class="flex justify-around items-end mt-16">
+                    <div class="text-sm">
+                        <p class="font-bold">إشراف</p>
+                        <p>أ. أزهار عبد التواب</p>
+                        <p class="text-[10px]">موجه أول العلوم</p>
+                    </div>
+                    <div class="text-sm">
+                        <p class="font-bold">برمجة وتصميم</p>
+                        <p>د. أحمد حمدي عاشور الغول</p>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <button onclick="window.print()" class="bg-blue-900 text-white px-6 py-2 rounded-lg">طاعة الشهادة (PDF)</button>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="text-center py-8 text-gray-400 text-sm">
+        جميع الحقوق محفوظة &copy; ٢٠٢٥ - الإدارة المركزية لتطوير المناهج
+    </footer>
+
+    <script>
+        const quizData = {
+            3: [
+                { q: "أي من المركبات التالية يعد المصدر الرئيسي والسريع للحصول على الطاقة في الخلية؟", a: ["البروتينات", "الكربوهيدرات", "الليبيدات", "الأحماض النووية"], c: 1, e: "تعتبر الكربوهيدرات (السكريات) أسرع مصدر للطاقة لسهولة تكسيرها واستخلاص الطاقة الكيميائية منها في الميتوكوندريا." },
+                { q: "العملية التي يتم من خلالها تحويل الطاقة الضوئية إلى طاقة كيميائية مخزنة هي:", a: ["التنفس الخلوي", "النتح", "البناء الضوئي", "الإخراج"], c: 2, e: "في عملية البناء الضوئي، يستخدم النبات الكلوروفيل لامتصاص طاقة الشمس وتحويلها لروابط كيميائية في سكر الجلوكوز." },
+                { q: "الوحدة الأساسية لبناء البروتينات في جسم الكائن الحي هي:", a: ["الأحماض الدهنية", "السكريات الأحادية", "الأحماض الأمينية", "النيوكليوتيدات"], c: 2, e: "الأحماض الأمينية هي المونيمرات التي ترتبط ببعضها بروابط ببتيدية لتكوين سلاسل البروتينات المعقدة." },
+                { q: "تتميز الكائنات 'ذاتية التغذية' بقدرتها على:", a: ["امتصاص الغذاء الجاهز", "صنع الغذاء من مواد غير عضوية بسيطة", "تحليل الجثث", "العيش متطفلة"], c: 1, e: "تستخدم الكائنات ذاتية التغذية مثل النباتات مواد أولية (ماء، CO2، ضوء) لصنع مركبات عضوية عالية الطاقة." },
+                { q: "العضو المسؤول عن تنقية الدم من الفضلات النيتروجينية في الإنسان هو:", a: ["الرئة", "الكلية", "الجلد", "الأمعاء"], c: 1, e: "الكلية هي العضو الرئيسي في الجهاز البولي الذي يقوم بترشيح الدم واستخلاص البول والفضلات النيتروجينية (اليوريا)." },
+                { q: "تسمى وحدة بناء الجهاز العصبي التي تنقل السيالات العصبية بـ:", a: ["النفرون", "الخلية العصبية", "الحويصلة الهوائية", "الليفة العضلية"], c: 1, e: "الخلية العصبية هي الوحدة الوظيفية والتركيبية المسؤولة عن نقل الإشارات الكهرومغناطيسية في الجسم." },
+                { q: "أي مما يلي يعد استجابة 'انتحاء ضوئي' إيجابي في النبات؟", a: ["نمو الجذر لأسفل", "نمو الساق نحو الضوء", "انغلاق الأوراق", "تفتح الأزهار"], c: 1, e: "ينتحي الساق إيجابياً للضوء بسبب تراكم الأوكسينات في الجانب المظلم، مما يحفز استطالة خلايا هذا الجانب بشكل أسرع." },
+                { q: "من خصائص المادة عندما تكون في 'حجم النانو' أنها:", a: ["تتفاعل ببطء", "تكتسب خواصاً فريدة وجديدة", "يقل عدد ذراتها", "تصبح موصلة للحرارة فقط"], c: 1, e: "عند حجم النانو، تزداد نسبة مساحة السطح إلى الحجم بشكل هائل، مما يغير من لون وصلادة وتفاعل المادة." },
+                { q: "يهدف 'الاتزان الداخلي' في الكائنات الحية إلى:", a: ["زيادة الحجم", "ثبات البيئة الداخلية للخلية", "التكاثر فقط", "تغيير التركيب الجيني"], c: 1, e: "الاتزان الداخلي (Homeostasis) يضمن استقرار درجة الحرارة ونسبة السكر والحموضة رغم تغير الظروف الخارجية." },
+                { q: "تستخدم تكنولوجيا النانو في مجال البيئة من أجل:", a: ["زيادة التلوث", "تحلية وتنقية المياه", "إنتاج أسلحة", "تقليل المساحات الخضراء"], c: 1, e: "تستخدم المرشحات النانوية (Nano-filters) في تنقية المياه من الميكروبات والمعادن الثقيلة بدقة متناهية." }
+            ],
+            4: [
+                { q: "أي من طبقات الأرض هي الأكبر من حيث الحجم وتتكون من صخور صلبة ولدنة؟", a: ["القشرة", "الوشاح", "اللب الخارجي", "اللب الداخلي"], c: 1, e: "الوشاح يمثل حوالي 80% من حجم صخور الأرض، والجزء العلوي منه (الأسينوسفير) يتصرف كالسوائل اللزجة." },
+                { q: "الصخور التي تتكون من تبريد وتجمد 'الماجما' أو 'اللافا' تسمى:", a: ["رسوبية", "نارية", "متحولة", "عضوية"], c: 1, e: "الصخور النارية هي صخور 'أم' تتكون مباشرة من انصهار المادة الصخرية ثم تبريدها." },
+                { q: "قدرة الصخر على السماح للسوائل بالمرور عبر مسامه تعرف بـ:", a: ["الصلادة", "النفاذية", "المسامية", "البريق"], c: 1, e: "النفاذية (Permeability) تختلف عن المسامية، فهي تعبر عن مدى اتصال المسام ببعضها لتسمح بمرور السوائل." },
+                { q: "يعد 'اليورانيوم' من أهم المصادر المستخدمة في إنتاج الطاقة:", a: ["الحرارية الأرضية", "الحفرية", "النووية", "الشمسية"], c: 2, e: "اليورانيوم عنصر مشع يطلق طاقة هائلة عند انشطار نواته في المفاعلات النووية لتوليد الكهرباء." },
+                { q: "تتكون الصخور الرسوبية نتيجة عمليات:", a: ["الضغط والحرارة الشديدين", "التفتت والنقل والترسيب", "انصهار الصخور", "النشاط البركاني"], c: 1, e: "تبدأ بتجوية الصخور ثم نقل الفتات عبر الرياح أو الماء وترسيبه في طبقات تتصلد مع الزمن." },
+                { q: "مصدر الطاقة الذي يعتمد على حرارة المياه والبخار المندفع من باطن الأرض هو:", a: ["الرياح", "الحرارية الأرضية", "الوقود الحيوي", "الهيدروجين"], c: 1, e: "تستغل الطاقة الجوفية (Geothermal) الحرارة الطبيعية المنبعثة من صخور الوشاح لتدوير التوربينات." },
+                { q: "تعتمد طريقة 'التقطير التجزيئي' لفصل مكونات النفط على الاختلاف في:", a: ["الكثافة", "درجة الغليان", "اللون", "الصلادة"], c: 1, e: "يتم تسخين النفط الخام، وكل مكون (مثل البنزين أو الكيروسين) يتكثف عند درجة غليان معينة خاصة به." },
+                { q: "يطلق مصطلح 'الهيدروجين الأبيض' على:", a: ["الهيدروجين الصناعي", "الهيدروجين الطبيعي في الأرض", "مستخلص الفحم", "الهيدروجين السائل"], c: 1, e: "الهيدروجين الأبيض هو الغاز المخزن طبيعياً في فجوات تحت سطح الأرض ولا يحتاج لعمليات تصنيع مكلفة." },
+                { q: "المقياس الذي يستخدم لتحديد درجة 'صلادة' المعادن هو:", a: ["ريختر", "موهس", "فيكرز", "كلفن"], c: 1, e: "مقياس موهس (Mohs) يرتب المعادن من 1 (التلك - الأقل صلادة) إلى 10 (الماس - الأكثر صلادة)." },
+                { q: "واحدة من عيوب استخدام 'الفحم' كمصدر للطاقة هي:", a: ["سهولة النقل", "الانبعاثات الكربونية العالية", "أنه متجدد", "انخفاض التكلفة"], c: 1, e: "الفحم ينتج أعلى نسبة من غاز ثاني أكسيد الكربون مقارنة بالبترول والغاز الطبيعي، مما يسرع الاحتباس الحراري." }
+            ]
+        };
+
+        let currentQuiz = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let canAnswer = true;
+        let studentName = "";
+
+        function checkNameAndStart(unit) {
+            const nameInput = document.getElementById('student-name').value;
+            if (nameInput.trim().length < 5) {
+                alert("برجاء كتابة الاسم الثلاثي على الأقل لإصدار الشهادة");
+                return;
+            }
+            studentName = nameInput;
+            startQuiz(unit);
+        }
+
+        function startQuiz(unit) {
+            currentQuiz = quizData[unit];
+            currentQuestionIndex = 0;
+            score = 0;
+            document.getElementById('quiz-title').innerText = unit === 3 ? "الوحدة الثالثة: الغلاف الحيوي" : "الوحدة الرابعة: الغلاف الصخري";
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('quiz-container').classList.remove('hidden');
+            showQuestion();
+        }
+
+        function showQuestion() {
+            canAnswer = true;
+            const q = currentQuiz[currentQuestionIndex];
+            document.getElementById('question-text').innerText = q.q;
+            document.getElementById('progress-text').innerText = `سؤال ${currentQuestionIndex + 1} من ${currentQuiz.length}`;
+            document.getElementById('progress-bar').style.width = `${((currentQuestionIndex + 1) / currentQuiz.length) * 100}%`;
+            document.getElementById('explanation-box').classList.add('hidden');
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('current-score').innerText = score;
+
+            const optionsGrid = document.getElementById('options-grid');
+            optionsGrid.innerHTML = '';
+            
+            q.a.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = "option-card bg-white border-2 border-gray-200 p-4 rounded-xl text-right text-lg font-medium hover:border-blue-300 transition-all flex items-center justify-between";
+                btn.innerHTML = `<span>${option}</span> <i class="fas fa-chevron-left text-gray-300"></i>`;
+                btn.onclick = () => selectOption(index, btn);
+                optionsGrid.appendChild(btn);
+            });
+        }
+
+        function selectOption(index, btn) {
+            if (!canAnswer) return;
+            canAnswer = false;
+
+            const correctIndex = currentQuiz[currentQuestionIndex].c;
+            const buttons = document.querySelectorAll('.option-card');
+            const explanationBox = document.getElementById('explanation-box');
+            const explanationText = document.getElementById('explanation-text');
+
+            if (index === correctIndex) {
+                btn.classList.add('correct');
+                score++;
+            } else {
+                btn.classList.add('wrong');
+                buttons[correctIndex].classList.add('correct');
+            }
+
+            explanationText.innerText = currentQuiz[currentQuestionIndex].e;
+            explanationBox.classList.remove('hidden');
+            document.getElementById('next-btn').classList.remove('hidden');
+            document.getElementById('current-score').innerText = score;
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < currentQuiz.length) {
+                showQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-container').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('final-score').innerText = score;
+
+            const icon = document.getElementById('result-icon');
+            const msg = document.getElementById('result-message');
+            const certBtn = document.getElementById('cert-btn');
+
+            if (score >= 8) {
+                icon.innerHTML = '🏆';
+                msg.innerText = "ممتاز! أداء استثنائي";
+                certBtn.classList.remove('hidden');
+            } else if (score >= 5) {
+                icon.innerHTML = '👏';
+                msg.innerText = "جيد جداً! تستحق الشهادة";
+                certBtn.classList.remove('hidden');
+            } else {
+                icon.innerHTML = '📚';
+                msg.innerText = "تحتاج للمزيد من المذاكرة";
+                certBtn.classList.add('hidden');
+            }
+        }
+
+        function showCertificate() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('certificate-screen').classList.remove('hidden');
+            document.getElementById('cert-student-name').innerText = studentName;
+        }
+
+        function resetQuiz() {
+            location.reload();
+        }
+    </script>
+</body>
+</html>
